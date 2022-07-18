@@ -1,4 +1,4 @@
-export const params = {
+exports.userParams = {
   AttributeDefinitions: [
     {
       AttributeName: "userName",

@@ -1,5 +1,5 @@
 const router = require("express").Router({ mergeParams: true });
-const { auth } = require("../services/auth");
+const { auth } = require("../services");
 
 router.post("/login", auth.login);
 

@@ -1,3 +1,9 @@
+const AWS = require("aws-sdk");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
+
 const REGION = "us-east-1";
 // Create an Amazon DynamoDB service client object.
 const ddbClient = new DynamoDBClient({ region: REGION });
@@ -20,7 +26,6 @@ const translateConfig = { marshallOptions, unmarshallOptions };
 // Create the DynamoDB Document client.
 const ddbDocClient = DynamoDBDocumentClient.from(ddbClient, translateConfig);
 
-
 // snippet-end:[dynamodb.JavaScript.tables.createdocclientv3]
 
-module.exports = { s3, ddbClient, ddbDocClient };
+module.exports = { ddbClient, ddbDocClient };

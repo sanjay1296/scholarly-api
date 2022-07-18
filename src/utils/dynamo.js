@@ -1,18 +1,18 @@
-const { ddbClient, ddbDocClient } = require("../libs");
-import { CreateTableCommand } from "@aws-sdk/client-dynamodb";
-import { GetCommand } from "@aws-sdk/lib-dynamodb";
+const { ddbClient, ddbDocClient } = require("../libs").aws;
+const { CreateTableCommand } = require("@aws-sdk/client-dynamodb");
+const { GetCommand } = require("@aws-sdk/lib-dynamodb");
 
 const models = require("../models");
 const fetchParams = (type) => {
   switch (type) {
     case "user":
-      return models.user;
+      return models.userParams;
     case "professor":
-      return models.school;
+      return models.professorParams;
     case "school":
-      return models.school;
+      return models.schoolParams;
     default:
-      return models.users;
+      return models.userParams;
   }
 };
 exports.createTable = async (type) => {
@@ -28,7 +28,7 @@ exports.createTable = async (type) => {
   }
 };
 
-exports.getItem = async (tableName, id, sortBy = "") => {
+exports.getItem = async (tableName, id) => {
   try {
     const params = {
       TableName: tableName,
@@ -37,35 +37,25 @@ exports.getItem = async (tableName, id, sortBy = "") => {
         // sortKey: sortBy,
       },
     };
-
     const data = await ddbDocClient.send(new GetCommand(params));
     console.log("Success :", data.Item);
+    return data.Item;
   } catch (err) {
     console.log("Error", err);
   }
 };
 
-// exports.updateItem = async (tableName, id, sortBy = "") => {
-//   // Set the parameters.
-//   const params = {
-//     TableName: tableName,
-//     Key: {
-//       title: "MOVIE_NAME",
-//       year: "MOVIE_YEAR",
-//     },
-//     ProjectionExpression: "#r",
-//     ExpressionAttributeNames: { "#r": "rank" },
-//     UpdateExpression: "set info.plot = :p, info.#r = :r",
-//     ExpressionAttributeValues: {
-//       ":p": "MOVIE_PLOT",
-//       ":r": "MOVIE_RANK",
-//     },
-//   };
-//   try {
-//     const data = await ddbDocClient.send(new UpdateCommand(params));
-//     console.log("Success - item added or updated", data);
-//     return data;
-//   } catch (err) {
-//     console.log("Error", err);
-//   }
-// };
+const putItem = async (tableName, data) => {
+  // Set the parameters.
+  const params = {
+    TableName: "USERS",
+    Item: data,
+  };
+  try {
+    console.log(params);
+    const data = await ddbDocClient.send(new PutCommand(params));
+    console.log("Success - item added or updated", data);
+  } catch (err) {
+    console.log("Error", err.stack);
+  }
+};
