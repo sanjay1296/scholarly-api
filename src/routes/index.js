@@ -5,6 +5,6 @@ router.use("/schools", controllers.schools);
 
 router.use("/professors", controllers.professors);
 
-router.use("/users", controllers.users);
+router.use("/students", controllers.students);
 
 module.exports = router;

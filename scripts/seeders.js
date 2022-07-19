@@ -10,42 +10,21 @@ const {
   PutCommand,
   QueryCommand,
 } = require("@aws-sdk/lib-dynamodb");
+const AWS = require("aws-sdk");
+const documentClient = new AWS.DynamoDB.DocumentClient({
+  // optional tuning - 50% faster(cold) / 20% faster(hot)
+  region: "us-east-1",
+  apiVersion: "2012-08-10",
+  sslEnabled: false,
+  paramValidation: false,
+  convertResponseTypes: false,
+});
+let { userParams, schoolParams, professorParams } = require("./../src/models");
 
-// Item: {
-//     uid: '47519799-29ef-4c4c-b416-1bc6179d88d2', f810c1fd-e039-4523-b778-9ffcd3cdde96
-//     userName: 'sanjay96',
-//     firstName: 'Sanjay',
-//     lastName: 'P',
-//     phoneNumber: '+91212121212',
-//     schoolId: 'b61716ea-4626-485b-9e5b-003b8dceb5c2',
-//     professorId: '3932b105-5d07-40a0-985b-6cd9830f7689'
-//   }
-
-const userParams = {
-  AttributeDefinitions: [
-    {
-      AttributeName: "uid",
-      AttributeType: "S",
-    },
-    {
-      AttributeName: "userName",
-      AttributeType: "S",
-    },
-  ],
-  ProvisionedThroughput: {
-    ReadCapacityUnits: 1,
-    WriteCapacityUnits: 1,
-  },
-  TableName: "USERS",
-  StreamSpecification: {
-    StreamEnabled: false,
-  },
-};
-
-const createTable = async () => {
+const createTable = async (params) => {
   try {
-    console.log(`"Fetching Params ${userParams}`);
-    const data = await ddbClient.send(new CreateTableCommand(userParams));
+    console.log(`"Fetching Params ${JSON.stringify(params)}`);
+    const data = await ddbClient.send(new CreateTableCommand(params));
     console.log("Table Created", data);
     return data;
   } catch (err) {
@@ -53,24 +32,73 @@ const createTable = async () => {
     return err.message;
   }
 };
+let schoolData = {
+  schoolId: getUuid(),
+  schoolName: "St.Claire",
+  schoolSize: 100,
+  address: "28 Price's Ave.",
+  city: "New York",
+  postcode: "1234",
+  firstName: "John",
+  lastName: "Davy",
+  phoneNumber: "+1212121212",
+  students: [],
+  professors: [],
+};
+let schoolData2 = {
+  schoolId: getUuid(),
+  schoolName: "St.John",
+  schoolSize: 100,
+  address: "38 Church street",
+  city: "New York",
+  postcode: "1234",
+  firstName: "Sam",
+  lastName: "Jackson",
+  phoneNumber: "+1212121212",
+  students: [],
+  professors: [],
+};
+let professorData = {
+  professorId: getUuid(),
+  email: "sampleprofessor@mail.com",
+  username: "mathew21",
+  firstName: "Mathew",
+  lastName: "Henry",
+  phoneNumber: "+91212121212",
+  schoolId: "b102e3b3-e07a-4556-9f77-a46e89ec1869",
+  students: [],
+};
 
-const putItem = async () => {
+let professorData2 = {
+  professorId: getUuid(),
+  email: "sampleprofessor2@mail.com",
+  username: "joey98",
+  firstName: "Joey",
+  lastName: "J",
+  phoneNumber: "+91212121212",
+  schoolId: "663dd278-c99f-4380-95ad-becacc1202a0",
+  students: [],
+};
+
+let userData = {
+  uid: getUuid(),
+  email: "samplestudent@mail.com",
+  username: "john100",
+  firstName: "John",
+  lastName: "Davy",
+  phoneNumber: "+91212121212",
+  schoolId: "b61716ea-4626-485b-9e5b-003b8dceb5c2",
+  professorId: "3932b105-5d07-40a0-985b-6cd9830f7689",
+};
+
+const putItem = async (tableName, data) => {
   // Set the parameters.
   const params = {
-    TableName: "USERS",
-    Item: {
-      uid: getUuid(),
-      userName: "john100",
-      firstName: "John",
-      lastName: "Davy",
-      phoneNumber: "+91212121212",
-      schoolId: "b61716ea-4626-485b-9e5b-003b8dceb5c2",
-      professorId: "3932b105-5d07-40a0-985b-6cd9830f7689",
-    },
+    TableName: tableName,
+    Item: data,
   };
   try {
     console.log(params);
-
     const data = await ddbDocClient.send(new PutCommand(params));
     console.log("Success - item added or updated", data);
   } catch (err) {
@@ -81,10 +109,10 @@ const putItem = async () => {
 const getItem = async (tableName, id) => {
   try {
     const params = {
-      TableName: "USERS",
+      TableName: "users",
       Key: {
         uid: "f810c1fd-e039-4523-b778-9ffcd3cdde96",
-        userName: "sanjay96",
+        username: "sanjay96",
       },
     };
     const data = await ddbDocClient.send(new GetCommand(params));
@@ -94,24 +122,59 @@ const getItem = async (tableName, id) => {
     console.log("Error", err.message);
   }
 };
+const queryTable = async (tableName) => {
+  const params = {
+    ExpressionAttributeNames: { "#r": "rank", "#y": "year" },
+    ProjectionExpression: "#r, #y, title",
+    TableName: tableName,
+    UpdateExpression: "set #r = :r, title = :t, #y = :y",
+    ExpressionAttributeValues: {
+      ":t": existingMovieName,
+      ":y": existingMovieYear,
+      ":r": newMovieRank,
+    },
+    KeyConditionExpression: "title = :t and #y = :y",
+    FilterExpression: "info.#r = :r",
+  };
 
-const queryTable = async () => {
+  console.log("Querying table...");
+  const data = await ddbDocClient.send(new QueryCommand(params));
+  // Loop through and parse the response.
+  for (let i = 0; i < data.Items.length; i++) {
+    console.log(
+      "Query successful. Items with rank of " +
+        newMovieRank +
+        " include\n" +
+        "Year = " +
+        data.Items[i].year +
+        " Title = " +
+        data.Items[i].title
+    );
+  }
+};
+const updateTable = async () => {
   try {
     const params = {
-      ExpressionAttributeNames: { "#uid": "uid" },
-      ProjectionExpression: "#uid",
-      TableName: "USERS",
+      ExpressionAttributeNames: { "#r": "rank", "#y": "year" },
+      ProjectionExpression: "#r, #y, title",
+      TableName: tableName,
+      UpdateExpression: "set #r = :r, title = :t, #y = :y",
       ExpressionAttributeValues: {
-        ":uid": "uid",
+        ":t": existingMovieName,
+        ":y": existingMovieYear,
+        ":r": newMovieRank,
       },
-      KeyConditionExpression: "uid = :uid",
-      FilterExpression: "info.#uid = :uid",
+      KeyConditionExpression: "title = :t and #y = :y",
+      FilterExpression: "info.#r = :r",
     };
+
+    console.log("Querying table...");
     const data = await ddbDocClient.send(new QueryCommand(params));
+    // Loop through and parse the response.
     for (let i = 0; i < data.Items.length; i++) {
       console.log(
-        "Success. Items with rank of " +
-          "MOVIE_RANK" +
+        "Query successful. Items with rank of " +
+          newMovieRank +
           " include\n" +
           "Year = " +
           data.Items[i].year +
@@ -123,34 +186,56 @@ const queryTable = async () => {
     console.log("Error", err);
   }
 };
-// createTable();
-// putItem();
+// createTable(professorParams);
+// putItem("schools", schoolData2);
+// putItem("professors", professorData);
+// putItem("professors", professorData2);
+// putItem("schools", updateData);
+// putItem("users", userData);
 // getItem();
 
+// queryTable();
+
+const scanTable = async (tableName) => {
+  const params = {
+    TableName: tableName,
+  };
+
+  const scanResults = [];
+  let items;
+  do {
+    items = await documentClient.scan(params).promise();
+    items.Items.forEach((item) => scanResults.push(item));
+    params.ExclusiveStartKey = items.LastEvaluatedKey;
+  } while (typeof items.LastEvaluatedKey !== "undefined");
+
+  console.log(scanResults);
+};
+scanTable("schools");
 const run = async () => {
   try {
     const params = {
       RequestItems: {
-        USERS: {
+        users: {
           Keys: [
             {
               uid: { S: "47519799-29ef-4c4c-b416-1bc6179d88d2" },
-              userName: { S: "sanjay96" },
+              username: { S: "sanjay96" },
               //   KEY_NAME_3: { N: "KEY_VALUE" },
             },
           ],
-          ProjectionExpression: "userName",
+          ProjectionExpression: "username",
         },
       },
     };
 
     const { Responses } = await ddbClient.send(new BatchGetItemCommand(params));
     console.log("Success, items retrieved", Responses);
-    console.log(Responses.USERS)
+    console.log(Responses.users);
     // return data;
   } catch (err) {
     console.log("Error", err);
   }
 };
-run();
+// run();
 // queryTable();

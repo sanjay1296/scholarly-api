@@ -6,7 +6,7 @@ router.post("/schools/:schoolId/professors", professors.registerProfessor);
 router.get("/schools/:schoolId/professors", professors.fetchAllProfessors);
 
 router.get(
-  "/schools/:schoolId/professors/:professorId",
+  "/schools/:schoolId/professors/:professorId/start/:sortBy",
   professors.fetchProfessor
 );
 

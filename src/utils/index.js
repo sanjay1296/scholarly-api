@@ -1,3 +1,3 @@
 module.exports = {
-  db: require("./dynamo"),
+  db: require("./db"),
 };
