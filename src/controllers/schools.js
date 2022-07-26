@@ -5,6 +5,8 @@ router.post("/", schools.registerSchool);
 
 router.get("/", schools.fetchAllSchools);
 
+router.get("/count", schools.fetchCounts);
+
 router.get("/:schoolId/start/:sortBy", schools.fetchSchool);
 
 router.put("/:schoolId", schools.updateSchool);

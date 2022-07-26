@@ -2,12 +2,12 @@ const { db } = require("../utils");
 var { v4: getUuid } = require("node-uuid");
 
 //POST "/users"
-exports.registerStudent = async (req, res) => {
+exports.createStudent = async (req, res) => {
   try {
     let uid = getUuid();
     let userdata = {
       uid,
-      email: req.body.username,
+      email: req.body.email,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       phoneNumber: req.body.phoneNumber || "",
@@ -16,7 +16,7 @@ exports.registerStudent = async (req, res) => {
       createdAt: Date.now(),
       userType: "student",
     };
-    let result = await db.putItem("users", userdata);
+    let result = await db.putItem("Users", userdata);
     return res.status(200).send({
       message: "Successfully created a new student",
       uid,
@@ -34,7 +34,7 @@ exports.registerStudent = async (req, res) => {
 //GET "/users"
 exports.fetchAllStudents = async (req, res) => {
   try {
-    let students = await db.queryTable("students");
+    let students = await db.queryTable("Users");
     if (!students || students.length === 0)
       throw new Error("No students found");
     return res.status(200).send(students);
@@ -54,10 +54,10 @@ exports.fetchStudent = async (req, res) => {
     let { uid, sortBy } = req.params;
     console.log("Fetching user data: ", uid);
     const params = {
-      TableName: "students",
+      TableName: "Users",
       Key: {
         uid,
-        username: sortBy,
+        email: sortBy,
       },
     };
     let userData = await db.getItem(params);

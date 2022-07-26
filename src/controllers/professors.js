@@ -1,22 +1,22 @@
 const router = require("express").Router({ mergeParams: true });
 const { professors } = require("../services");
 
-router.post("/schools/:schoolId/professors", professors.registerProfessor);
+router.post("/school/:schoolId", professors.createProfessor);
 
-router.get("/schools/:schoolId/professors", professors.fetchAllProfessors);
+router.get("/school/:schoolId", professors.fetchAllProfessors);
 
 router.get(
-  "/schools/:schoolId/professors/:professorId/start/:sortBy",
+  "/school/:schoolId/professor/:professorId/start/:sortBy",
   professors.fetchProfessor
 );
 
 router.put(
-  "/schools/:schoolId/professors/:professorId",
+  "/school/:schoolId/professor/:professorId",
   professors.updateProfessor
 );
 
 router.delete(
-  "/schools/:schoolId/professors/:professorId",
+  "/school/:schoolId/professor/:professorId",
   professors.deleteProfessor
 );
 

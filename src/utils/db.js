@@ -1,6 +1,6 @@
 const { ddbClient, ddbDocClient, documentClient } = require("../libs").aws;
 const { CreateTableCommand } = require("@aws-sdk/client-dynamodb");
-const { GetCommand } = require("@aws-sdk/lib-dynamodb");
+const { GetCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
 
 const models = require("../models");
 const fetchParams = (type) => {
@@ -43,20 +43,27 @@ exports.queryTable = async (tableName) => {
   return scanResults;
 };
 exports.getItem = async (params) => {
-
   const data = await ddbDocClient.send(new GetCommand(params));
-  console.log("Success :", data.Item);
   return data.Item;
 };
 
+exports.getUsers = async (params) => {
+  var params = {
+    TableName: "Users",
+    KeyConditionExpression: "#email = :email",
+    ExpressionAttributeNames: {
+      "#email": "email",
+    },
+    ExpressionAttributeValues: {
+      ":email": email,
+    },
+  };
+};
 exports.putItem = async (tableName, data) => {
-  // Set the parameters.
   const params = {
     TableName: tableName,
     Item: data,
   };
   console.log("Adding/Updating :", params);
-  const result = await ddbDocClient.send(new PutCommand(params));
-  console.log("Success - item added or updated", result);
-  return result;
+  return await ddbDocClient.send(new PutCommand(params));
 };

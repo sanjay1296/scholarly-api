@@ -1,19 +1,23 @@
+var { v4: getUuid } = require("node-uuid");
+const { db } = require("../utils");
+
 //POST "/professors"
-exports.registerProfessor = async (req, res) => {
+exports.createProfessor = async (req, res) => {
   let { schoolId } = req.params.schoolId;
   try {
-    let professorId = getUuid();
+    let uid = getUuid();
     let professorData = {
-      professorId,
+      uid,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
+      password: req.body.password,
       phoneNumber: req.body.phoneNumber || "",
       createdAt: Date.now(),
       schoolId,
-      students: [],
+      userType: "staff",
     };
-    let result = await db.putItem("professors", professorData);
+    let result = await db.putItem("Users", professorData);
     return res.status(200).send({
       message: "Successfully created a new professor",
       schoolId,
@@ -31,7 +35,7 @@ exports.registerProfessor = async (req, res) => {
 //GET "/professors"
 exports.fetchAllProfessors = async (req, res) => {
   try {
-    let professors = await db.queryTable("professors");
+    let professors = await db.queryTable("Users");
     return res.status(200).send(professors);
   } catch (error) {
     console.log("Failed to fetch all professors: ", error.message);
@@ -46,13 +50,13 @@ exports.fetchAllProfessors = async (req, res) => {
 //GET "/professors/:uid/start/:sortBy"
 exports.fetchProfessor = async (req, res) => {
   try {
-    let { professorId, sortBy } = req.params;
-    console.log("Fetching professor data for: ", username);
+    let { uid, sortBy, schoolId } = req.params;
+    console.log("Fetching professor data for: ", email);
     const params = {
-      TableName: "professors",
+      TableName: "Users",
       Key: {
-        professorId,
-        username: sortBy,
+        uid,
+        email: sortBy,
       },
     };
     let professorData = await db.getItem(params);

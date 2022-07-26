@@ -5,7 +5,7 @@ exports.userParams = {
       AttributeType: "S",
     },
     {
-      AttributeName: "username",
+      AttributeName: "email",
       AttributeType: "S",
     },
   ],
@@ -15,7 +15,7 @@ exports.userParams = {
       KeyType: "HASH",
     },
     {
-      AttributeName: "username",
+      AttributeName: "email",
       KeyType: "RANGE",
     },
   ],
@@ -23,38 +23,7 @@ exports.userParams = {
     ReadCapacityUnits: 1,
     WriteCapacityUnits: 1,
   },
-  TableName: "students",
-  StreamSpecification: {
-    StreamEnabled: false,
-  },
-};
-
-exports.professorParams = {
-  AttributeDefinitions: [
-    {
-      AttributeName: "professorId",
-      AttributeType: "S",
-    },
-    {
-      AttributeName: "username",
-      AttributeType: "S",
-    },
-  ],
-  KeySchema: [
-    {
-      AttributeName: "professorId",
-      KeyType: "HASH",
-    },
-    {
-      AttributeName: "username",
-      KeyType: "RANGE",
-    },
-  ],
-  ProvisionedThroughput: {
-    ReadCapacityUnits: 1,
-    WriteCapacityUnits: 1,
-  },
-  TableName: "professors",
+  TableName: "Users",
   StreamSpecification: {
     StreamEnabled: false,
   },
@@ -85,7 +54,38 @@ exports.schoolParams = {
     ReadCapacityUnits: 1,
     WriteCapacityUnits: 1,
   },
-  TableName: "schools",
+  TableName: "Schools",
+  StreamSpecification: {
+    StreamEnabled: false,
+  },
+};
+
+exports.courseParams = {
+  AttributeDefinitions: [
+    {
+      AttributeName: "courseId",
+      AttributeType: "S",
+    },
+    {
+      AttributeName: "courseName",
+      AttributeType: "S",
+    },
+  ],
+  KeySchema: [
+    {
+      AttributeName: "courseId",
+      KeyType: "HASH",
+    },
+    {
+      AttributeName: "courseName",
+      KeyType: "RANGE",
+    },
+  ],
+  ProvisionedThroughput: {
+    ReadCapacityUnits: 1,
+    WriteCapacityUnits: 1,
+  },
+  TableName: "Courses",
   StreamSpecification: {
     StreamEnabled: false,
   },

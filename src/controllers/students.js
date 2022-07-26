@@ -1,12 +1,17 @@
 const router = require("express").Router({ mergeParams: true });
 const { students } = require("../services");
 
-router.get("/schools/:schoolId/students", students.fetchAllStudents);
+router.post("/school/:schoolId", students.createStudent);
 
-router.get("/schools/:schoolId/students/:uid", students.fetchStudent);
+router.get("/school/:schoolId", students.fetchAllStudents);
 
-router.put("/schools/:schoolId/students/:uid", students.updateStudent);
+router.get(
+  "/school/:schoolId/student/:uid/start/:sortBy",
+  students.fetchStudent
+);
 
-router.delete("/schools/:schoolId/students/:uid", students.deleteStudent);
+router.put("/school/:schoolId/student/:uid", students.updateStudent);
+
+router.delete("/school/:schoolId/student/:uid", students.deleteStudent);
 
 module.exports = router;

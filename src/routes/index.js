@@ -1,5 +1,8 @@
 const router = require("express").Router({ mergeParams: true });
 const controllers = require("../controllers");
+const { requiresAuth } = require("express-openid-connect");
+
+// router.use("/auth",  controllers.auth);
 
 router.use("/schools", controllers.schools);
 

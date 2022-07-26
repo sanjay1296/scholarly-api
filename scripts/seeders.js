@@ -19,7 +19,12 @@ const documentClient = new AWS.DynamoDB.DocumentClient({
   paramValidation: false,
   convertResponseTypes: false,
 });
-let { userParams, schoolParams, professorParams } = require("./../src/models");
+let {
+  userParams,
+  schoolParams,
+  professorParams,
+  courseParams,
+} = require("./../src/models");
 
 const createTable = async (params) => {
   try {
@@ -79,7 +84,14 @@ let professorData2 = {
   schoolId: "663dd278-c99f-4380-95ad-becacc1202a0",
   students: [],
 };
-
+let superAdminData = {
+  uid: getUuid(),
+  email: "samplestudent@mail.com",
+  password: "password",
+  firstName: "Super",
+  lastName: "Admin",
+  phoneNumber: "+91212121212",
+};
 let userData = {
   uid: getUuid(),
   email: "samplestudent@mail.com",
@@ -186,16 +198,6 @@ const updateTable = async () => {
     console.log("Error", err);
   }
 };
-// createTable(professorParams);
-// putItem("schools", schoolData2);
-// putItem("professors", professorData);
-// putItem("professors", professorData2);
-// putItem("schools", updateData);
-// putItem("users", userData);
-// getItem();
-
-// queryTable();
-
 const scanTable = async (tableName) => {
   const params = {
     TableName: tableName,
@@ -211,7 +213,6 @@ const scanTable = async (tableName) => {
 
   console.log(scanResults);
 };
-scanTable("schools");
 const run = async () => {
   try {
     const params = {
@@ -237,5 +238,35 @@ const run = async () => {
     console.log("Error", err);
   }
 };
+// documentClient
+//   .get({
+//     TableName: "schools",
+//     Key: {
+//       schoolId: "23d181bf-ecdd-4ad9-84bb-691cc3f96ac1",
+//       schoolName : "School3 Name"
+//     },
+//   })
+//   .promise()
+//   .then((data) => console.log(data))
+//   .catch((err) => console.log(err.message));
+
+// documentClient
+//   .scan({ TableName: "schools" })
+//   .promise()
+//   .then((data) => console.log(data))
+//   .catch((err) => console.log(err.message));
+
+// createTable(schoolParams);
+// createTable(userParams);
+// createTable(courseParams);
+putItem("Users", superAdminData);
+// putItem("schools", schoolData2);
+// putItem("professors", professorData);
+// putItem("professors", professorData2);
+// putItem("schools", updateData);
+// putItem("users", userData);
+// getItem();
+// queryTable();
+// scanTable("schools");
 // run();
 // queryTable();

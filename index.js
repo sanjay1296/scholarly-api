@@ -2,12 +2,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const config = require("./src/config");
+const { auth } = require("express-openid-connect");
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// app.use(auth(config.auth0));
 app.use("/api", require("./src/routes"));
 
 app.use((err, req, res, next) => {
@@ -20,7 +23,6 @@ app.use((err, req, res, next) => {
   } else return next();
 });
 
-app.listen(3000, () => {
-  console.log("listen on port 3000");
+app.listen(3015, () => {
+  console.log("listen on port 3015");
 });
-
