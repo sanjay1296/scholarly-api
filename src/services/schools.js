@@ -57,7 +57,7 @@ exports.fetchAllSchools = async (req, res) => {
   try {
     let schools = await db.queryTable("Schools");
     if (!schools || schools.length === 0) throw new Error("No schools found");
-    console.log(`Successfully fetched ${schools.length} schools`);
+    console.log(`Successfully fetched ${schools.length} schools data`);
     return res.status(200).send(schools);
   } catch (error) {
     console.log("Failed to fetch all schools data: ", error.message);
