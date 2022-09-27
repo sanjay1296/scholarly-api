@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const config = require("./src/config");
+const localize = require("./src/middlewares");
 const { auth } = require("express-openid-connect");
 const app = express();
 app.use(express.json());
@@ -10,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// app.use(auth(config.auth0));
+//api endpoints
 app.use("/api", require("./src/routes"));
 
 app.use((err, req, res, next) => {

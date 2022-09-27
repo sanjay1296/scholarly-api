@@ -1,13 +1,23 @@
 const { db } = require("../utils");
-var { v4: getUuid } = require("node-uuid");
+const { v4: getUuid } = require("node-uuid");
+const { i18n } = require("../utils");
 
 //POST "/schools"
-var { v4: getUuid } = require("node-uuid");
+const Joi = require("joi");
 
 exports.registerSchool = async (req, res) => {
   try {
     let schoolId = getUuid();
     let principalId = getUuid();
+
+    const schema = Joi.object().keys({
+      email: Joi.string().email().required(),
+      schoolName: Joi.string()
+        .regex(/^\d{3}-\d{3}-\d{4}$/)
+        .required(),
+    });
+    let { email } = req.body;
+    if (!email) throw new Error(i18n.translate("emailRequired"));
     let schoolData = {
       schoolId,
       schoolName: req.body.schoolName,
@@ -23,7 +33,7 @@ exports.registerSchool = async (req, res) => {
       uid: principalId,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      email: req.body.email,
+      email: email.toLowerCase(),
       phoneNumber: req.body.phoneNumber || "",
       password: req.body.password,
       createdAt: Date.now(),
@@ -39,14 +49,16 @@ exports.registerSchool = async (req, res) => {
     );
 
     return res.status(200).send({
-      message: "Successfully created a new school",
+      // message: "Successfully created a new school",
+      message: i18n.translate("registerSchoolSuccess"),
       schoolId,
       principalId,
     });
   } catch (error) {
     console.log("Failed to register school: ", error.message);
     return res.status(400).send({
-      message: "Failed to register school",
+      // message: "Failed to register school",
+      message: i18n.translate("registerSchoolFailure"),
       error: error.message,
     });
   }

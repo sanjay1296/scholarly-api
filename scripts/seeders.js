@@ -121,7 +121,7 @@ const putItem = async (tableName, data) => {
 const getItem = async (tableName, id) => {
   try {
     const params = {
-      TableName: "users",
+      TableName: "Users",
       Key: {
         uid: "f810c1fd-e039-4523-b778-9ffcd3cdde96",
         username: "sanjay96",
@@ -198,6 +198,8 @@ const updateTable = async () => {
     console.log("Error", err);
   }
 };
+
+//Client operations
 const scanTable = async (tableName) => {
   const params = {
     TableName: tableName,
@@ -213,34 +215,37 @@ const scanTable = async (tableName) => {
 
   console.log(scanResults);
 };
-const run = async () => {
-  try {
-    const params = {
-      RequestItems: {
-        users: {
-          Keys: [
-            {
-              uid: { S: "47519799-29ef-4c4c-b416-1bc6179d88d2" },
-              username: { S: "sanjay96" },
-              //   KEY_NAME_3: { N: "KEY_VALUE" },
-            },
-          ],
-          ProjectionExpression: "username",
-        },
-      },
-    };
 
-    const { Responses } = await ddbClient.send(new BatchGetItemCommand(params));
-    console.log("Success, items retrieved", Responses);
-    console.log(Responses.users);
-    // return data;
+const createItem = async (tableName, data) => {
+  const params = {
+    TableName: tableName,
+    Item: data,
+  };
+  try {
+    console.log(params);
+    const data = await documentClient.put(params).promise();
+    console.log("Success - item added or updated", data);
   } catch (err) {
-    console.log("Error", err);
+    console.log("Error", err.stack);
+  }
+};
+
+const updateItem = async (tableName, data) => {
+  const params = {
+    TableName: tableName,
+    Item: data,
+  };
+  try {
+    console.log(params);
+    const data = await documentClient.put(params).promise();
+    console.log("Success - item added or updated", data);
+  } catch (err) {
+    console.log("Error", err.stack);
   }
 };
 // documentClient
 //   .get({
-//     TableName: "schools",
+//     TableName: "Schools",
 //     Key: {
 //       schoolId: "23d181bf-ecdd-4ad9-84bb-691cc3f96ac1",
 //       schoolName : "School3 Name"
@@ -251,22 +256,27 @@ const run = async () => {
 //   .catch((err) => console.log(err.message));
 
 // documentClient
-//   .scan({ TableName: "schools" })
+//   .scan({ TableName: "Schools" })
 //   .promise()
 //   .then((data) => console.log(data))
 //   .catch((err) => console.log(err.message));
 
 // createTable(schoolParams);
 // createTable(userParams);
-// createTable(courseParams);
-putItem("Users", superAdminData);
-// putItem("schools", schoolData2);
+createTable(courseParams);
+// putItem("Users", superAdminData);
+// putItem("Schools", schoolData2);
 // putItem("professors", professorData);
 // putItem("professors", professorData2);
-// putItem("schools", updateData);
-// putItem("users", userData);
+// putItem("Schools", updateData);
+// putItem("Users", userData);
 // getItem();
 // queryTable();
-// scanTable("schools");
-// run();
-// queryTable();
+// scanTable("Schools");
+
+let item = {
+  postcode: "123991",
+  schoolId: "40fd401e-1173-41db-b81e-9e33f8a2425c",
+};
+
+// updateItem("Schools", item);

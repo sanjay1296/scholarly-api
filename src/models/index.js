@@ -66,19 +66,11 @@ exports.courseParams = {
       AttributeName: "courseId",
       AttributeType: "S",
     },
-    {
-      AttributeName: "courseName",
-      AttributeType: "S",
-    },
   ],
   KeySchema: [
     {
       AttributeName: "courseId",
       KeyType: "HASH",
-    },
-    {
-      AttributeName: "courseName",
-      KeyType: "RANGE",
     },
   ],
   ProvisionedThroughput: {

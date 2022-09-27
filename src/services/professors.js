@@ -1,6 +1,6 @@
 var { v4: getUuid } = require("node-uuid");
 const { db } = require("../utils");
-
+const { ddbDocClient, documentClient } = require("../libs").aws;
 //POST "/professors"
 exports.createProfessor = async (req, res) => {
   let { schoolId } = req.params.schoolId;
@@ -35,7 +35,20 @@ exports.createProfessor = async (req, res) => {
 //GET "/professors"
 exports.fetchAllProfessors = async (req, res) => {
   try {
-    let professors = await db.queryTable("Users");
+    let schoolId = req.params.schoolId;
+    var params = {
+      TableName: "Users",
+      IndexName: "schoolId",
+      KeyConditionExpression: "#sid = :ss",
+
+      ExpressionAttributeNames: {
+        "#sid": "schoolId",
+      },
+      ExpressionAttributeValues: {
+        ":ss": schoolId,
+      },
+    };
+    let professors = await documentClient.query(params).promise();
     return res.status(200).send(professors);
   } catch (error) {
     console.log("Failed to fetch all professors: ", error.message);

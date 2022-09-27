@@ -1,6 +1,9 @@
 const router = require("express").Router({ mergeParams: true });
 const controllers = require("../controllers");
 const { requiresAuth } = require("express-openid-connect");
+const { localize } = require("./../middlewares");
+
+router.use(localize);
 
 // router.use("/auth",  controllers.auth);
 

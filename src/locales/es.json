@@ -1,0 +1,7 @@
+{
+    "registerSchoolSuccess": "Successfully created a new school",
+    "registerSchoolFailure": "Failed to register school",
+    "schoolNotFound": "School not found",
+    "emailRequired": "correo electronico es requerido"
+  }
+  
